@@ -168,7 +168,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     if (currentEmail == 'error@test.com') {
       emit(
         LoginState.error(
-          message: 'Invalid email or password',
+          message: 'Неверный email или пароль',
           email: currentEmail,
           password: currentPassword,
         ),
