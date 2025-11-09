@@ -5,6 +5,8 @@ import 'package:local_auth/local_auth.dart';
 import 'package:test_erna/core/bloc/auth_bloc/auth_bloc.dart';
 import 'package:test_erna/core/service/bluetooth_service.dart';
 import 'package:test_erna/core/service/ios_health_service.dart';
+import 'package:test_erna/core/service/mock_bluetooth_service.dart';
+import 'package:test_erna/core/service/mock_health_data_service.dart';
 import 'package:test_erna/core/service/smartwatch_data_service.dart';
 import 'package:test_erna/core/service/unified_health_service.dart';
 import 'package:test_erna/data/dao/auth_dao.dart';
@@ -20,6 +22,11 @@ import 'router/app_router.dart';
 /// Sets up all app dependencies using get_it
 class CompositionRoot {
   static final GetIt _getIt = GetIt.instance;
+
+  /// Флаг для использования mock сервисов (для тестирования без физических устройств)
+  /// Установите в true для использования mock данных
+  static const bool useMockServices =
+      false; // Измените на false для работы с реальными устройствами
 
   /// Get the service locator instance
   static GetIt get getIt => _getIt;
@@ -143,20 +150,37 @@ class CompositionRoot {
 
   /// Register services (API, notification, etc.)
   static Future<void> _registerServices() async {
-    // Bluetooth Service
-    _getIt.registerLazySingleton<BluetoothService>(
-      () => BluetoothServiceImpl(FlutterBluePlus()),
-    );
+    if (useMockServices) {
+      print('🎭 Using MOCK services for testing');
 
-    // Smartwatch Data Service (standard BLE GATT)
-    _getIt.registerLazySingleton<SmartwatchDataService>(
-      () => SmartwatchDataServiceImpl(_getIt<BluetoothService>()),
-    );
+      // Mock Bluetooth Service
+      _getIt.registerLazySingleton<BluetoothService>(
+        () => MockBluetoothService(),
+      );
 
-    // iOS Health Service (for getting data from iOS HealthKit)
+      // Mock Smartwatch Data Service
+      _getIt.registerLazySingleton<SmartwatchDataService>(
+        () => MockHealthDataService(),
+      );
+    } else {
+      print('📱 Using REAL services');
+
+      // Real Bluetooth Service
+      _getIt.registerLazySingleton<BluetoothService>(
+        () => BluetoothServiceImpl(FlutterBluePlus()),
+      );
+
+      // Real Smartwatch Data Service (standard BLE GATT)
+      _getIt.registerLazySingleton<SmartwatchDataService>(
+        () => SmartwatchDataServiceImpl(_getIt<BluetoothService>()),
+      );
+    }
+
+    // iOS Health Service (для получения данных из iOS HealthKit)
+    // Всегда используется реальный сервис, так как iOS Health использует системное API
     _getIt.registerLazySingleton<IosHealthService>(() => IosHealthService());
 
-    // Unified Health Service (автоматически выбирает Huawei, Sahha, iOS Health или BLE)
+    // Unified Health Service (автоматически выбирает iOS Health или BLE)
     _getIt.registerLazySingleton<UnifiedHealthService>(
       () => UnifiedHealthServiceImpl(
         smartwatchDataService: _getIt<SmartwatchDataService>(),

@@ -1,16 +1,265 @@
 # test_erna
 
-A new Flutter project.
+Приложение для мониторинга здоровья с интеграцией смарт-часов на Flutter.
 
-## Getting Started
+## 📱 Описание
 
-This project is a starting point for a Flutter application.
+**test_erna** — это мобильное приложение для отслеживания показателей здоровья через подключение к смарт-часам и фитнес-трекерам по Bluetooth. Приложение позволяет собирать, визуализировать и анализировать данные о здоровье пользователя в реальном времени.
 
-A few resources to get you started if this is your first Flutter project:
+### Основные возможности:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- 🔐 **Биометрическая аутентификация** (Touch ID / Face ID / отпечаток пальца)
+- 🔵 **Подключение к смарт-часам по Bluetooth** (Samsung, Apple Watch, Fitbit, Garmin и др.)
+- ❤️ **Мониторинг пульса** в реальном времени
+- 🚶 **Отслеживание шагов**, дистанции и калорий
+- 🔋 **Контроль заряда батареи** устройства
+- 🌡️ **Измерение температуры тела** и уровня SpO2
+- 📊 **Дашборд с визуализацией данных**
+- 🎭 **Mock-режим** для разработки и тестирования без физических устройств
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🛠️ Технологии и библиотеки
+
+### Основные зависимости:
+
+| Библиотека | Версия | Назначение |
+|------------|--------|------------|
+| **flutter_bloc** | ^9.1.1 | Управление состоянием приложения (BLoC pattern) |
+| **auto_route** | ^10.2.0 | Навигация и маршрутизация |
+| **get_it** | ^8.0.2 | Dependency Injection (Service Locator) |
+| **local_auth** | ^3.0.0 | Биометрическая аутентификация (Touch ID, Face ID) |
+| **flutter_secure_storage** | ^9.2.2 | Безопасное хранение данных (токены, учетные данные) |
+| **flutter_blue_plus** | ^1.32.12 | Bluetooth Low Energy (BLE) для подключения к устройствам |
+| **health** | ^13.2.1 | Интеграция с Health Connect (Android) и HealthKit (iOS) |
+| **permission_handler** | ^11.3.1 | Управление разрешениями (Bluetooth, здоровье, геолокация) |
+| **freezed** | ^3.2.3 | Генерация immutable-моделей и Union types |
+
+### Dev зависимости:
+
+- **build_runner** ^2.10.1 — запуск кодогенерации
+- **freezed** ^3.2.3 — генератор данных для immutable-классов
+- **auto_route_generator** ^10.2.5 — генератор маршрутов
+
+## 🏗️ Архитектура
+
+Приложение построено на **Clean Architecture** с разделением на слои:
+
+```
+lib/
+├── core/                          # Ядро приложения
+│   ├── composition_root.dart      # Dependency Injection (GetIt)
+│   ├── theme.dart                 # Тема приложения
+│   ├── router/                    # Маршрутизация (AutoRoute)
+│   ├── bloc/                      # BLoC'и для управления состоянием
+│   └── service/                   # Сервисы (Bluetooth, Health Data)
+│       ├── mock_bluetooth_service.dart       # Mock Bluetooth для тестирования
+│       └── mock_health_data_service.dart     # Mock данные здоровья
+├── data/                          # Слой данных
+│   ├── dao/                       # Data Access Objects
+│   └── repositories/              # Реализация репозиториев
+├── presentation/                  # UI слой
+│   ├── screens/                   # Экраны приложения
+│   │   ├── splash_screen/         # Экран загрузки
+│   │   ├── login_screen.dart      # Экран входа с биометрией
+│   │   ├── main_screen/           # Главный экран с навигацией
+│   │   ├── dashboard_screen.dart  # Дашборд с данными
+│   │   └── diagnostics_screen.dart # Диагностика устройств
+│   └── blocs/                     # UI-специфичные BLoC'и
+└── examples/                      # Примеры использования
+    └── mock_services_example.dart # Примеры работы с Mock-сервисами
+```
+
+### Паттерны проектирования:
+
+- **BLoC (Business Logic Component)** — управление состоянием
+- **Repository Pattern** — абстракция доступа к данным
+- **Service Locator (GetIt)** — внедрение зависимостей
+- **Clean Architecture** — разделение на слои (Presentation, Domain, Data)
+
+## 🎭 Mock-сервисы для разработки
+
+Приложение включает полнофункциональные **mock-сервисы** для разработки и тестирования без физических устройств:
+
+### MockBluetoothService
+
+16 предконфигурированных виртуальных устройств:
+- **Samsung**: Galaxy Watch6, Watch5 Pro
+- **Apple**: Watch Series 9, Watch Ultra 2
+- **Fitbit**: Sense 2, Versa 4
+- **Garmin**: Fenix 7, Forerunner 965
+- **Amazfit**: GTR 4, T-Rex 2
+- **Huawei**: WATCH GT 4, Fit 3
+- **Xiaomi**: Watch S3, Mi Band 8
+- **Polar**: Vantage V3
+- **Withings**: ScanWatch 2
+
+### MockHealthDataService
+
+Реалистичная генерация данных:
+- **Пульс**: 50-180 BPM с циркадными ритмами (ниже ночью, выше днем)
+- **Батарея**: постепенная разрядка (~1% каждые 30 секунд)
+- **Шаги**: накопление по времени (~300 шагов/час)
+- **SpO2**: 96-100%
+- **Температура**: 36.3-36.9°C
+
+**Переключение режимов**: изменить флаг `useMockServices` в `composition_root.dart`
+
+## 🚀 Установка и запуск
+
+### Требования:
+
+- Flutter SDK ^3.8.1
+- Android SDK (минимум API 26) с AGP 8.9.1+
+- iOS 12.0+ (для iOS-версии)
+- Xcode 14+ (для iOS)
+
+### Шаги установки:
+
+```bash
+# 1. Клонировать репозиторий
+git clone https://github.com/redjamhere/test-erna.git
+cd test_erna
+
+# 2. Установить зависимости
+flutter pub get
+
+# 3. Запустить кодогенерацию (для Freezed и AutoRoute)
+dart run build_runner build --delete-conflicting-outputs
+
+# 4. Запустить приложение
+flutter run
+
+# 5. Собрать релизную версию для Android
+flutter build apk --release
+```
+
+### Для Android:
+
+```bash
+# Debug сборка
+flutter build apk --debug
+
+# Release сборка
+flutter build apk --release
+
+# Установка на устройство
+adb install build/app/outputs/flutter-apk/app-release.apk
+```
+
+## ⚙️ Конфигурация
+
+### Android (минимальные требования):
+
+- **minSdkVersion**: 26 (Android 8.0) — требуется для Health Connect API
+- **Android Gradle Plugin**: 8.9.1+ — требуется для библиотеки `health`
+- **Gradle**: 8.12
+
+### Разрешения (Android):
+
+```xml
+<!-- Bluetooth -->
+<uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+<uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+<!-- Health Connect -->
+<uses-permission android:name="android.permission.health.READ_HEART_RATE" />
+<uses-permission android:name="android.permission.health.READ_HEALTH_DATA_HISTORY" />
+```
+
+## 🔑 Ключевые особенности реализации
+
+### 1. Биометрическая аутентификация
+
+```dart
+// Использование local_auth для Touch ID / Face ID
+final LocalAuthentication auth = LocalAuthentication();
+final bool didAuthenticate = await auth.authenticate(
+  localizedReason: 'Войдите для доступа к приложению',
+);
+```
+
+### 2. Bluetooth подключение
+
+```dart
+// Сканирование устройств через flutter_blue_plus
+FlutterBluePlus.startScan(timeout: Duration(seconds: 4));
+await for (var scanResult in FlutterBluePlus.scanResults) {
+  // Обработка найденных устройств
+}
+```
+
+### 3. Мониторинг здоровья
+
+```dart
+// Получение данных о пульсе через health package
+final heartRateData = await Health().getHealthDataFromTypes(
+  startTime: DateTime.now().subtract(Duration(hours: 1)),
+  endTime: DateTime.now(),
+  types: [HealthDataType.HEART_RATE],
+);
+```
+
+### 4. Управление состоянием (BLoC)
+
+```dart
+// Пример BLoC для аутентификации
+class AuthBloc extends Bloc<AuthEvent, AuthState> {
+  AuthBloc() : super(AuthInitial()) {
+    on<AuthLogin>(_onLogin);
+    on<AuthLogout>(_onLogout);
+  }
+}
+```
+
+## 📖 Документация
+
+- **[MOCK_SERVICES_README.md](MOCK_SERVICES_README.md)** — полное руководство по работе с mock-сервисами (550+ строк)
+- **[lib/examples/mock_services_example.dart](lib/examples/mock_services_example.dart)** — 5 рабочих примеров использования mock-сервисов
+
+## 🐛 Отладка
+
+### Проблемы с установкой (Android):
+
+```bash
+# INSTALL_FAILED_USER_RESTRICTED (Xiaomi/MIUI)
+adb install -r --user 0 build/app/outputs/flutter-apk/app-debug.apk
+
+# Или включить "Установка через USB" в настройках MIUI:
+# Настройки → Дополнительно → Для разработчиков → Установка через USB
+```
+
+### Логи mock-сервисов:
+
+Mock-сервисы используют эмодзи для различения типов данных в консоли:
+- 🎭 — Mock-сервисы
+- 💓 — Пульс
+- 🔋 — Батарея
+- 🚶 — Шаги
+- 🌡️ — Температура
+- 🫁 — SpO2
+
+## 📄 Лицензия
+
+Частный проект (не публикуется на pub.dev).
+
+## 👨‍💻 Разработка
+
+```bash
+# Запуск в режиме разработки с hot reload
+flutter run
+
+# Анализ кода
+flutter analyze
+
+# Форматирование кода
+dart format lib/
+
+# Запуск тестов
+flutter test
+```
+
+---
+
+**Версия**: 1.0.0+1  
+**Flutter SDK**: ^3.8.1  
+**Репозиторий**: [github.com/redjamhere/test-erna](https://github.com/redjamhere/test-erna)

@@ -86,7 +86,7 @@ class LocalAuthRepositoryImpl implements LocalAuthRepository {
 
       return await _localAuth.authenticate(
         localizedReason: localizedReason,
-        biometricOnly: true, // Only biometric, no PIN/password fallback
+        // biometricOnly: true, // Only biometric, no PIN/password fallback
       );
     } catch (e) {
       return false;
