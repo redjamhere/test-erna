@@ -211,11 +211,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 }
 ```
 
-## 📖 Документация
-
-- **[MOCK_SERVICES_README.md](MOCK_SERVICES_README.md)** — полное руководство по работе с mock-сервисами (550+ строк)
-- **[lib/examples/mock_services_example.dart](lib/examples/mock_services_example.dart)** — 5 рабочих примеров использования mock-сервисов
-
 ## 🐛 Отладка
 
 ### Проблемы с установкой (Android):
